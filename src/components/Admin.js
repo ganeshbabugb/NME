@@ -28,7 +28,7 @@ const Admin = () => {
 
     useEffect(() => {
         let user = sessionStorage.getItem('user')
-        if (user === '' || user === null) usenavigate('/login')
+        if (user !== "ADMIN") usenavigate('/login')
         getData()
         setTimeout(() => setUserLogin(false), 2000)
     }, [usenavigate]);
