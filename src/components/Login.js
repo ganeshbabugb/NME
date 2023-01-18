@@ -11,15 +11,13 @@ import {
 } from '@chakra-ui/react';
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../Constants/URL";
 
 const Login = () => {
 
     const [username, setUser] = useState('');
     const [password, setPassword] = useState('');
 
-    const [userNotFound, setUserNotFound] = useState(false);
-    const [invalidPassword, setInvalidPassword] = useState(false);
+    const [invalidCredential, setInvalidCredential] = useState(false);
 
     const [errors, setErrors] = useState({});
 
@@ -39,51 +37,23 @@ const Login = () => {
             sessionStorage.setItem('user', 'ADMIN');
             usenavigate('/admin');
         }
+        else {
+            setInvalidCredential(true);
+            setTimeout(() => setInvalidCredential(false), 2000)
+        }
         setErrors(newErrors);
         (Object.keys(newErrors).length === 0) ? result = true : result = false
         return result
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (validate()) {
-            fetch(API_URL + "/" + username)
-                .then((res) => res.json())
-                .then((resp) => {
-                    if (Object.keys(resp).length === 0) {
-                        setUserNotFound(true);
-                        setTimeout(() => setUserNotFound(false), 2000)
-                    } else {
-                        if (resp.dob === password) {
-                            sessionStorage.setItem('username', username);
-                            usenavigate('/home')
-                        } else {
-                            setInvalidPassword(true);
-                            setTimeout(() => setInvalidPassword(false), 2000)
-                        }
-                    }
-                })
-                .catch((err) => console.log(err.message))
-        }
-    }
-
     return (
         <>
 
-            {userNotFound
+            {invalidCredential
                 ? (
                     <Alert status='error'>
                         <AlertIcon />
-                        USER NOT FOUND!
-                    </Alert>
-                ) : null
-            }
-
-            {invalidPassword
-                ? (
-                    <Alert status='error'>
-                        <AlertIcon />
-                        PLEASE ENTER VALID DOB.
+                        INVALID LOGIN CREDENTIAL!
                     </Alert>
                 ) : null
             }
@@ -127,7 +97,7 @@ const Login = () => {
                         <Button
                             bg={'blue.400'}
                             color={'white'}
-                            onClick={handleSubmit}>
+                            onClick={validate}>
                             SUBMIT
                         </Button>
                     </Stack>
@@ -137,4 +107,4 @@ const Login = () => {
     );
 };
 
-export default Login 
+export default Login
